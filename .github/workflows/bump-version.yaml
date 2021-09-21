@@ -13,13 +13,19 @@ on:
 jobs:
   bump-version:
     runs-on: ubuntu-latest
+    # if: |
+    #   github.event.pull_request.merged
+    #   && (
+    #       contains(github.event.pull_request.labels.*.name, 'bump patch')
+    #       || contains(github.event.pull_request.labels.*.name, 'bump minor')
+    #       || contains(github.event.pull_request.labels.*.name, 'bump major')
+    #   )
+
     if: |
-      # github.event.pull_request.merged
-      # && 
       (
-          contains(github.event.pull_request.labels.*.name, 'bump patch')
-          || contains(github.event.pull_request.labels.*.name, 'bump minor')
-          || contains(github.event.pull_request.labels.*.name, 'bump major')
+        contains(github.event.pull_request.labels.*.name, 'bump patch')
+        || contains(github.event.pull_request.labels.*.name, 'bump minor')
+        || contains(github.event.pull_request.labels.*.name, 'bump major')
       )
 
     steps:
@@ -49,4 +55,3 @@ jobs:
           if [[ $BUMP_MAJOR_PRESENT == 'true' ]]; then
               node createVersion.js major $NAME $DESCRIPTION
           fi
- 
