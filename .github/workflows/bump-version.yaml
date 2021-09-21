@@ -1,0 +1,45 @@
+name: Bump Version
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.merged
+      && (
+          contains(github.event.pull_request.labels.*.name, 'bump patch')
+          || contains(github.event.pull_request.labels.*.name, 'bump minor')
+          || contains(github.event.pull_request.labels.*.name, 'bump major')
+      )
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Bump
+        env:
+          BUMP_PATCH_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump patch') }}
+          BUMP_MINOR_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump minor') }}
+          BUMP_MAJOR_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump major') }}
+          NAME: ${{ echo $(github.event.pull_request.body), grep -o -P "(?<=# VERSION NAME).*(?---)") }}
+          DESCRIPTION: ${{ echo $(github.event.pull_request.body), grep -o -P "(?<=# DESCRIPTION NAME).*(?---)") }}
+        
+        run: |
+          if [[ $BUMP_PATCH_PRESENT == 'true' ]]; then
+              node createVersion.js patch $NAME $DESCRIPTION
+          fi
+          if [[ $BUMP_MINOR_PRESENT == 'true' ]]; then
+              node createVersion.js minor $NAME $DESCRIPTION
+          fi
+          if [[ $BUMP_MAJOR_PRESENT == 'true' ]]; then
+              node createVersion.js major $NAME $DESCRIPTION
+          fi
+ 

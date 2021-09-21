@@ -1,9 +1,16 @@
 /**
  * Increment package version and create release
  * @example
- * 
+ *
  * createVersion.js minor "version name" "what's new in this version"
  */
+
+const CONFIG = {
+  owner: "NoamRa",
+  repo: "create-version-demo",
+  packageJsonIndent: 2,
+};
+
 const util = require("util");
 const fs = require("fs");
 const path = require("path");
@@ -78,7 +85,7 @@ async function getPackageJsonPath() {
 async function updatePackageFile(packageJsonPath, bumpType) {
   const packageJson = JSON.parse(await readFile(packageJsonPath));
   packageJson.version = bump(packageJson.version, bumpType);
-  await writeFile(JSON.stringify(packageJson, null, 2));
+  await writeFile(JSON.stringify(packageJson, null, CONFIG.indent));
   return semver;
 }
 
@@ -91,7 +98,7 @@ async function createRelease(tag, name, body) {
   const options = {
     url: "api.github.com",
     port: "80",
-    path: `/repos/NoamRa/alpha-badger/releases`,
+    path: `/repos/${CONFIG.owner}/${CONFIG.repo}/releases`,
     method: "POST",
     headers: {
       accept: "application/vnd.github.v3+json",
