@@ -47,14 +47,14 @@ function getArgs() {
 
   const name = substringBetween("# VERSION NAME", body, "---");
   const description = substringBetween("# VERSION DESCRIPTION", body, "---");
-  if (name.length <= 4) {
+  if (name.length < 4) {
     throw `Name is too short, must be at least 4 characters. Got name ${name}`;
   }
   if (name.split("\n") !== 1) {
     throw `Name has line brake inside... BTW it's ${name}`;
   }
-  if (body.length <= 4) {
-    throw `Body is too short, must be at least 4 characters. Got body\n${body}`;
+  if (body.length < 6) {
+    throw `Body is too short, must be at least 6 characters. Got body\n${body}`;
   }
 
   return { bumpType, name, description };
