@@ -50,7 +50,7 @@ function getArgs() {
   if (name.length < 4) {
     throw `Name is too short, must be at least 4 characters. Got name ${name}`;
   }
-  if (name.split("\n") !== 1) {
+  if (name.indexOf("\n") !== -1) {
     throw `Name has line brake inside... BTW it's ${name}, and the line break is at ${name.indexOf("\n")}`;
   }
   if (body.length < 6) {
