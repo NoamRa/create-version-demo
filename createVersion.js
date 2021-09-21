@@ -34,26 +34,30 @@ const exec = util.promisify(cp.exec);
 //
 function getArgs() {
   const args = process.argv.slice(2);
-  if (args.length !== 3) {
-    throw `Should get three arguments: bump type, release name and release body. Got ${
+  if (args.length !== 2) {
+    throw `Should get three arguments: bump type, and pull request body. Got ${
       args.length
     } arguments:\n${args.join("\n")}`;
   }
 
-  const [bumpType, name, body] = args;
-
-  // validation
+  const [bumpType, body] = args;
   if (!["major", "minor", "patch"].includes(bumpType)) {
     throw `Bump type is invalid, must be one either 'major', 'minor', or 'patch'. Got ${bumpType}`;
   }
+
+  const name = substringBetween("# VERSION NAME", str, "---");
+  const description = substringBetween("# VERSION DESCRIPTION", str, "---");
   if (name.length <= 4) {
     throw `Name is too short, must be at least 4 characters. Got name ${name}`;
+  }
+  if (name.split("\n") !== 1) {
+    throw `Name has line brake inside... BTW it's ${name}`;
   }
   if (body.length <= 4) {
     throw `Body is too short, must be at least 4 characters. Got body\n${body}`;
   }
 
-  return { bumpType, name, body };
+  return { bumpType, name, description };
 }
 
 function bump(semver, bumpType) {
@@ -146,4 +150,8 @@ async function httpsRequest(options, postData) {
 
     request.end();
   });
+}
+
+function substringBetween(before, string, after) {
+  return string.split(before)[1].split(after)[0].trim();
 }
