@@ -35,7 +35,9 @@ const exec = util.promisify(cp.exec);
 function getArgs() {
   const args = process.argv.slice(2);
   if (args.length !== 3) {
-    throw `Should get three arguments: bump type, release name and release body. Got ${args.length} arguments`;
+    throw `Should get three arguments: bump type, release name and release body. Got ${
+      args.length
+    } arguments:\n${args.join("\n")}`;
   }
 
   const [bumpType, name, body] = args;
