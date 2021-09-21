@@ -42,7 +42,7 @@ jobs:
           BUMP_PATCH_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump patch') }}
           BUMP_MINOR_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump minor') }}
           BUMP_MAJOR_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump major') }}
-          PR_BODY: $github.event.pull_request.body
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           echo $PR_BODY
 
