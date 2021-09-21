@@ -42,11 +42,14 @@ jobs:
           BUMP_PATCH_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump patch') }}
           BUMP_MINOR_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump minor') }}
           BUMP_MAJOR_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump major') }}
+          PR_BODY: $github.event.pull_request.body
         run: |
-          name=$(github.event.pull_request.body | grep -o -P "(?<=# VERSION NAME).*(?---)")
+          echo: $PR_BODY
+
+          name=$($PR_BODY | grep -o -P "(?<=# VERSION NAME).*(?---)")
           echo $name
 
-          description=$(github.event.pull_request.body | grep -o -P "(?<=# DESCRIPTION NAME).*(?---)")
+          description=$($PR_BODY | grep -o -P "(?<=# DESCRIPTION NAME).*(?---)")
           echo $description
 
           if [[ $BUMP_PATCH_PRESENT == 'true' ]]; then
