@@ -24,9 +24,7 @@ jobs:
     #   && contains(github.event.pull_request.body, '# DESCRIPTION NAME')
 
     if: |
-      contains(github.event.pull_request.body, '# VERSION NAME')
-      && contains(github.event.pull_request.body, '# DESCRIPTION NAME')
-      && (
+      (
         contains(github.event.pull_request.labels.*.name, 'bump patch')
         || contains(github.event.pull_request.labels.*.name, 'bump minor')
         || contains(github.event.pull_request.labels.*.name, 'bump major')
