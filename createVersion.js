@@ -80,9 +80,9 @@ async function getPackageJsonPath() {
     path.join(__dirname, "..", "..", package),
   ];
 
-  for (const p in paths) {
-    if (await exists(sameDir)) {
-      return sameDir;
+  for (const pth in paths) {
+    if (await exists(pth)) {
+      return pth;
     }
   }
   throw `Failed to find ${package} file. Searched\n${paths.join("\n")}`;
