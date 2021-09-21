@@ -48,11 +48,11 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           if [[ $BUMP_PATCH_PRESENT == 'true' ]]; then
-            node createVersion.js patch $PR_BODY
+            node createVersion.js patch "$PR_BODY"
           fi
           if [[ $BUMP_MINOR_PRESENT == 'true' ]]; then
-            node createVersion.js minor $PR_BODY
+            node createVersion.js minor "$PR_BODY"
           fi
           if [[ $BUMP_MAJOR_PRESENT == 'true' ]]; then
-            node createVersion.js major $PR_BODY
+            node createVersion.js major "$PR_BODY"
           fi
