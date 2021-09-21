@@ -45,8 +45,8 @@ function getArgs() {
     throw `Bump type is invalid, must be one either 'major', 'minor', or 'patch'. Got ${bumpType}`;
   }
 
-  const name = substringBetween("# VERSION NAME", str, "---");
-  const description = substringBetween("# VERSION DESCRIPTION", str, "---");
+  const name = substringBetween("# VERSION NAME", body, "---");
+  const description = substringBetween("# VERSION DESCRIPTION", body, "---");
   if (name.length <= 4) {
     throw `Name is too short, must be at least 4 characters. Got name ${name}`;
   }
