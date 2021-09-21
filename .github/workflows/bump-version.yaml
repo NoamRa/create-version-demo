@@ -20,7 +20,7 @@ jobs:
           || contains(github.event.pull_request.labels.*.name, 'bump minor')
           || contains(github.event.pull_request.labels.*.name, 'bump major')
       )
-      
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -38,7 +38,6 @@ jobs:
           NAME: $"github.event.pull_request.body" | grep -o -P "(?<=# VERSION NAME).*(?---)")
           DESCRIPTION: $"github.event.pull_request.body" | grep -o -P "(?<=# DESCRIPTION NAME).*(?---)")
         run: |
-
 
           if [[ $BUMP_PATCH_PRESENT == 'true' ]]; then
               node createVersion.js patch $NAME $DESCRIPTION
