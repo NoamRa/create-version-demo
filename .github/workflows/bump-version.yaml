@@ -14,8 +14,7 @@ jobs:
   bump-version:
     runs-on: ubuntu-latest
     if: |
-      github.event.pull_request.merged
-      && (
+      (
           contains(github.event.pull_request.labels.*.name, 'bump patch')
           || contains(github.event.pull_request.labels.*.name, 'bump minor')
           || contains(github.event.pull_request.labels.*.name, 'bump major')
