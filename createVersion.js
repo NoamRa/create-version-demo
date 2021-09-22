@@ -91,12 +91,12 @@ async function getPackageJsonPath() {
   ];
 
   for (const aPath in paths) {
-    if (await exists(aPath)) {
+    try {
+      console.log(aPath);
+      await exists(aPath);
       return aPath;
-    }
+    } catch (err) {}
   }
-  console.log(await exec("pwd"));
-  console.log(await exec("ls"));
   throw `Failed to find ${package} file. Searched\n${paths.join("\n")}`;
 }
 
