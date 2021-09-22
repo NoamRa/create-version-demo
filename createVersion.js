@@ -87,7 +87,7 @@ async function updatePackageFile(packageJsonPath, bumpType) {
     JSON.stringify(packageJson, null, CONFIG.indent),
     "utf-8",
   );
-  return semver;
+  return packageJson.version;
 }
 
 async function setCredentials() {
