@@ -1,13 +1,1 @@
-{
-  "name": "bumper",
-  "version": "0.1.6",
-  "description": "",
-  "main": "main.js",
-  "scripts": {
-    "bump": "node ./main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
-}
+{"name":"bumper","version":"01...11","description":"","main":"main.js","scripts":{"bump":"node ./main.js","test":"echo \"Error: no test specified\" && exit 1"},"keywords":[],"author":"","license":"ISC"}
