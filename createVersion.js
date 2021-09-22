@@ -23,12 +23,20 @@ const exists = util.promisify(fs.exists);
 const exec = util.promisify(cp.exec);
 
 (async function main() {
-  const { bumpType, name, body } = getArgs();
-  await setCredentials();
-  const semver = await updatePackageFile(await getPackageJsonPath(), bumpType);
-  await exec(`git commit -am "update version to ${semver}"`);
-  await exec("git push");
-  await createRelease(`v${semver}`, name, body);
+  try {
+    const { bumpType, name, body } = getArgs();
+    await setCredentials();
+    const semver = await updatePackageFile(
+      await getPackageJsonPath(),
+      bumpType,
+    );
+    await exec(`git commit -am "update version to ${semver}"`);
+    await exec("git push");
+    await createRelease(`v${semver}`, name, body);
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
 })();
 
 //
@@ -51,7 +59,9 @@ function getArgs() {
     throw `Name is too short, must be at least 4 characters. Got name ${name}`;
   }
   if (name.indexOf("\n") !== -1) {
-    throw `Name has line brake inside... BTW it's ${name}, and the line break is at ${name.indexOf("\n")}`;
+    throw `Name has line brake inside... BTW it's ${name}, and the line break is at ${name.indexOf(
+      "\n",
+    )}`;
   }
   if (body.length < 6) {
     throw `Body is too short, must be at least 6 characters. Got body\n${body}`;
@@ -85,6 +95,8 @@ async function getPackageJsonPath() {
       return pth;
     }
   }
+  await exec("pwd");
+  await exec("ls");
   throw `Failed to find ${package} file. Searched\n${paths.join("\n")}`;
 }
 
