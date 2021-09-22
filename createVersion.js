@@ -11,16 +11,16 @@ const CONFIG = {
   packageJsonIndent: 2,
 };
 
-const util = require("util");
+const { promisify } = require("util");
 const fs = require("fs");
 const path = require("path");
 const cp = require("child_process");
 const https = require("https");
 
-const readFile = util.promisify(fs.readFile);
-const writeFile = util.promisify(fs.writeFile);
-const exists = util.promisify(fs.exists);
-const exec = util.promisify(cp.exec);
+const readFile = promisify(fs.readFile);
+const writeFile = promisify(fs.writeFile);
+const exists = promisify(fs.stat);
+const exec = promisify(cp.exec);
 
 (async function main() {
   try {
@@ -90,9 +90,9 @@ async function getPackageJsonPath() {
     path.join(__dirname, "..", "..", package),
   ];
 
-  for (const pth in paths) {
-    if (await exists(pth)) {
-      return pth;
+  for (const aPath in paths) {
+    if (await exists(aPath)) {
+      return aPath;
     }
   }
   console.log(await exec("pwd"));
