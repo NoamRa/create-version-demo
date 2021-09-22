@@ -8,6 +8,7 @@
 const CONFIG = {
   owner: "NoamRa",
   repo: "create-version-demo",
+  packageJsonPath: path.join(__dirname, "package.json"),
   packageJsonIndent: 2,
 };
 
@@ -19,17 +20,13 @@ const https = require("https");
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
-const exists = promisify(fs.stat);
 const exec = promisify(cp.exec);
 
 (async function main() {
   try {
     const { bumpType, name, body } = getArgs();
     await setCredentials();
-    const semver = await updatePackageFile(
-      await getPackageJsonPath(),
-      bumpType,
-    );
+    const semver = await updatePackageFile(CONFIG.packageJsonPath, bumpType);
     await exec(`git commit -am "update version to ${semver}"`);
     await exec("git push");
     await createRelease(`v${semver}`, name, body);
@@ -80,24 +77,6 @@ function bump(semver, bumpType) {
     return `${major + 1}.${minor}.${patch + 1}`;
   }
   throw `Failed to match bump type. Got ${bumpType}`;
-}
-
-async function getPackageJsonPath() {
-  const package = "package.json";
-  const paths = [
-    path.join(__dirname, package),
-    path.join(__dirname, "..", package),
-    path.join(__dirname, "..", "..", package),
-  ];
-
-  for (const aPath of paths) {
-    try {
-      console.log(aPath);
-      await exists(aPath);
-      return aPath;
-    } catch (err) {}
-  }
-  throw `Failed to find ${package} file. Searched\n${paths.join("\n")}`;
 }
 
 async function updatePackageFile(packageJsonPath, bumpType) {
