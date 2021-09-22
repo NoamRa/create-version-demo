@@ -90,7 +90,7 @@ async function getPackageJsonPath() {
     path.join(__dirname, "..", "..", package),
   ];
 
-  for (const aPath in paths) {
+  for (const aPath of paths) {
     try {
       console.log(aPath);
       await exists(aPath);
