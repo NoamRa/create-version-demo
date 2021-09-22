@@ -5,13 +5,6 @@
  * createVersion.js minor "version name" "what's new in this version"
  */
 
-const CONFIG = {
-  owner: "NoamRa",
-  repo: "create-version-demo",
-  packageJsonPath: path.join(__dirname, "package.json"),
-  packageJsonIndent: 2,
-};
-
 const { promisify } = require("util");
 const fs = require("fs");
 const path = require("path");
@@ -21,6 +14,13 @@ const https = require("https");
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 const exec = promisify(cp.exec);
+
+const CONFIG = {
+  owner: "NoamRa",
+  repo: "create-version-demo",
+  packageJsonPath: path.join(__dirname, "package.json"),
+  packageJsonIndent: 2,
+};
 
 (async function main() {
   try {
