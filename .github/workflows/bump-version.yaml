@@ -1,14 +1,14 @@
 name: Bump Version
 
-# on:
-#   pull_request:
-#     types: [closed]
-#     branches: [main]
-
 on:
   pull_request:
-    branches:
-      - main
+    types: [closed]
+    branches: [main]
+
+# on:
+#   pull_request:
+#     branches:
+#       - main
 
 jobs:
   bump-version:
@@ -29,7 +29,6 @@ jobs:
         || contains(github.event.pull_request.labels.*.name, 'bump minor')
         || contains(github.event.pull_request.labels.*.name, 'bump major')
       ) 
-
 
     steps:
       - name: Checkout
