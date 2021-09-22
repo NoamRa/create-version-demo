@@ -80,9 +80,13 @@ function bump(semver, bumpType) {
 }
 
 async function updatePackageFile(packageJsonPath, bumpType) {
-  const packageJson = JSON.parse(await readFile(packageJsonPath));
+  const packageJson = JSON.parse(await readFile(packageJsonPath, "utf-8"));
   packageJson.version = bump(packageJson.version, bumpType);
-  await writeFile(JSON.stringify(packageJson, null, CONFIG.indent));
+  await writeFile(
+    packageJsonPath,
+    JSON.stringify(packageJson, null, CONFIG.indent),
+    "utf-8",
+  );
   return semver;
 }
 
