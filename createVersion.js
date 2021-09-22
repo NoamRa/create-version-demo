@@ -29,7 +29,7 @@ const CONFIG = {
     const semver = await updatePackageFile(CONFIG.packageJsonPath, bumpType);
     await exec(`git commit -am "update version to ${semver}"`);
     await exec("git branch main");
-    await exec("git push origin main");
+    await exec("git push -f origin main");
     await createRelease(`v${semver}`, name, body);
   } catch (error) {
     console.error(error);
