@@ -99,9 +99,8 @@ async function setCredentials() {
 async function createRelease(tag, name, body) {
   const options = {
     url: "api.github.com",
-    port: "80",
-    path: `/repos/${CONFIG.owner}/${CONFIG.repo}/releases`,
     method: "POST",
+    path: `/repos/${CONFIG.owner}/${CONFIG.repo}/releases`,
     headers: {
       accept: "application/vnd.github.v3+json",
     },
