@@ -13,13 +13,24 @@ on:
 jobs:
   bump-version:
     runs-on: ubuntu-latest
+    # if: |
+    #   github.event.pull_request.merged
+    #   && (
+    #       contains(github.event.pull_request.labels.*.name, 'bump patch')
+    #       || contains(github.event.pull_request.labels.*.name, 'bump minor')
+    #       || contains(github.event.pull_request.labels.*.name, 'bump major')
+    #   )
+    #   && contains(github.event.pull_request.body, '# VERSION NAME')
+    #   && contains(github.event.pull_request.body, '# DESCRIPTION NAME')
+
     if: |
-      github.event.pull_request.merged
-      && (
-          contains(github.event.pull_request.labels.*.name, 'bump patch')
-          || contains(github.event.pull_request.labels.*.name, 'bump minor')
-          || contains(github.event.pull_request.labels.*.name, 'bump major')
-      )
+      (
+        contains(github.event.pull_request.labels.*.name, 'bump patch')
+        || contains(github.event.pull_request.labels.*.name, 'bump minor')
+        || contains(github.event.pull_request.labels.*.name, 'bump major')
+      ) 
+
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -34,18 +45,14 @@ jobs:
           BUMP_PATCH_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump patch') }}
           BUMP_MINOR_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump minor') }}
           BUMP_MAJOR_PRESENT: ${{ contains(github.event.pull_request.labels.*.name, 'bump major') }}
-          NAME: $"github.event.pull_request.body" | grep -o -P "(?<=# VERSION NAME).*(?---)")
-          DESCRIPTION: $"github.event.pull_request.body" | grep -o -P "(?<=# DESCRIPTION NAME).*(?---)")
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-
-
           if [[ $BUMP_PATCH_PRESENT == 'true' ]]; then
-              node createVersion.js patch $NAME $DESCRIPTION
+            node createVersion.js patch "$PR_BODY"
           fi
           if [[ $BUMP_MINOR_PRESENT == 'true' ]]; then
-              node createVersion.js minor $NAME $DESCRIPTION
+            node createVersion.js minor "$PR_BODY"
           fi
           if [[ $BUMP_MAJOR_PRESENT == 'true' ]]; then
-              node createVersion.js major $NAME $DESCRIPTION
+            node createVersion.js major "$PR_BODY"
           fi
- 

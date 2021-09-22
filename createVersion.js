@@ -5,53 +5,67 @@
  * createVersion.js minor "version name" "what's new in this version"
  */
 
-const CONFIG = {
-  owner: "NoamRa",
-  repo: "create-version-demo",
-  packageJsonIndent: 2,
-};
-
-const util = require("util");
+const { promisify } = require("util");
 const fs = require("fs");
 const path = require("path");
 const cp = require("child_process");
 const https = require("https");
 
-const readFile = util.promisify(fs.readFile);
-const writeFile = util.promisify(fs.writeFile);
-const exists = util.promisify(fs.exists);
-const exec = util.promisify(cp.exec);
+const readFile = promisify(fs.readFile);
+const writeFile = promisify(fs.writeFile);
+const exec = promisify(cp.exec);
+
+const CONFIG = {
+  owner: "NoamRa",
+  repo: "create-version-demo",
+  packageJsonPath: path.join(__dirname, "package.json"),
+  packageJsonIndent: 2,
+};
 
 (async function main() {
-  const { bumpType, name, body } = getArgs();
-  await setCredentials();
-  const semver = await updatePackageFile(await getPackageJsonPath(), bumpType);
-  await exec(`git commit -am "update version to ${semver}"`);
-  await exec("git push");
-  await createRelease(`v${semver}`, name, body);
+  try {
+    const { bumpType, name, body } = getArgs();
+    await setCredentials();
+    const semver = await updatePackageFile(CONFIG.packageJsonPath, bumpType);
+    await exec(`git commit -am "update version to ${semver}"`);
+    await exec("git branch main");
+    await exec("git push -f origin main");
+    await createRelease(`v${semver}`, name, body);
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
 })();
 
 //
 function getArgs() {
   const args = process.argv.slice(2);
-  if (args.length !== 3) {
-    throw `Should get three arguments: bump type, release name and release body. Got ${args.length} arguments`;
+  if (args.length !== 2) {
+    throw `Should get three arguments: bump type, and pull request body. Got ${
+      args.length
+    } arguments:\n${args.join("\n")}`;
   }
 
-  const [bumpType, name, body] = args;
-
-  // validation
+  const [bumpType, body] = args;
   if (!["major", "minor", "patch"].includes(bumpType)) {
     throw `Bump type is invalid, must be one either 'major', 'minor', or 'patch'. Got ${bumpType}`;
   }
-  if (name.length <= 4) {
+
+  const name = substringBetween("# VERSION NAME", body, "---");
+  const description = substringBetween("# VERSION DESCRIPTION", body, "---");
+  if (name.length < 4) {
     throw `Name is too short, must be at least 4 characters. Got name ${name}`;
   }
-  if (body.length <= 4) {
-    throw `Body is too short, must be at least 4 characters. Got body\n${body}`;
+  if (name.indexOf("\n") !== -1) {
+    throw `Name has line brake inside... BTW it's ${name}, and the line break is at ${name.indexOf(
+      "\n",
+    )}`;
+  }
+  if (body.length < 6) {
+    throw `Body is too short, must be at least 6 characters. Got body\n${body}`;
   }
 
-  return { bumpType, name, body };
+  return { bumpType, name, description };
 }
 
 function bump(semver, bumpType) {
@@ -66,27 +80,15 @@ function bump(semver, bumpType) {
   throw `Failed to match bump type. Got ${bumpType}`;
 }
 
-async function getPackageJsonPath() {
-  const package = "package.json";
-  const paths = [
-    path.join(__dirname, package),
-    path.join(__dirname, "..", package),
-    path.join(__dirname, "..", "..", package),
-  ];
-
-  for (const p in paths) {
-    if (await exists(sameDir)) {
-      return sameDir;
-    }
-  }
-  throw `Failed to find ${package} file. Searched\n${paths.join("\n")}`;
-}
-
 async function updatePackageFile(packageJsonPath, bumpType) {
-  const packageJson = JSON.parse(await readFile(packageJsonPath));
+  const packageJson = JSON.parse(await readFile(packageJsonPath, "utf-8"));
   packageJson.version = bump(packageJson.version, bumpType);
-  await writeFile(JSON.stringify(packageJson, null, CONFIG.indent));
-  return semver;
+  await writeFile(
+    packageJsonPath,
+    JSON.stringify(packageJson, null, CONFIG.indent),
+    "utf-8",
+  );
+  return packageJson.version;
 }
 
 async function setCredentials() {
@@ -144,4 +146,8 @@ async function httpsRequest(options, postData) {
 
     request.end();
   });
+}
+
+function substringBetween(before, string, after) {
+  return string.split(before)[1].split(after)[0].trim();
 }
