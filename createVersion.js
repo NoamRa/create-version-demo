@@ -28,8 +28,9 @@ const CONFIG = {
     await setCredentials();
     const semver = await updatePackageFile(CONFIG.packageJsonPath, bumpType);
     await exec(`git commit -am "update version to ${semver}"`);
-    await exec("git branch main");
-    await exec("git push -f origin main");
+    // await exec("git branch main");
+    // await exec("git push -f origin main");
+    await exec("git push origin main");
     await createRelease(`v${semver}`, name, body);
   } catch (error) {
     console.error(error);
@@ -99,9 +100,8 @@ async function setCredentials() {
 async function createRelease(tag, name, body) {
   const options = {
     url: "api.github.com",
-    port: "80",
-    path: `/repos/${CONFIG.owner}/${CONFIG.repo}/releases`,
     method: "POST",
+    path: `/repos/${CONFIG.owner}/${CONFIG.repo}/releases`,
     headers: {
       accept: "application/vnd.github.v3+json",
     },
