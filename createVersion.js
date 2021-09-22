@@ -95,8 +95,8 @@ async function getPackageJsonPath() {
       return pth;
     }
   }
-  await exec("pwd");
-  await exec("ls");
+  console.log(await exec("pwd"));
+  console.log(await exec("ls"));
   throw `Failed to find ${package} file. Searched\n${paths.join("\n")}`;
 }
 
